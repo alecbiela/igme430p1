@@ -1,0 +1,26 @@
+{
+  "name": "igme430p1",
+  "version": "1.0.0",
+  "description": "IGME430 Project I (HTTP API for Rich Media II at RIT)",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alecbiela/igme430p1.git"
+  },
+  "author": "Alec Bielanos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alecbiela/igme430p1/issues"
+  },
+  "homepage": "https://github.com/alecbiela/igme430p1#readme",
+  "devDependencies": {
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb": "^16.0.0",
+    "eslint-plugin-import": "^2.7.0"
+  }
+}

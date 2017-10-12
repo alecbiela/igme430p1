@@ -1,0 +1,39 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#top {
+  float: left;
+  width: 49%;
+  margin: auto;
+}
+
+#features {
+  float: right;
+  width: 49%;
+  margin: auto;
+}
+
+#player {
+  width: 600px;
+  margin: auto;
+}
+
+#content{
+  width: 49%;
+  height: 500px;
+}
+
+#top, #features, #player, #content {
+    border: 1px solid grey;
+    display: block;
+    padding: 2px;
+}
+
+#vUrl {
+  color: red;
+  text-decoration: underline;
+}

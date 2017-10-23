@@ -37,3 +37,15 @@ html, body {
   color: red;
   text-decoration: underline;
 }
+
+#tUp, #tDown {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+#tUp:hover, #tDown:hover {
+	background-color: #00F;
+	border: 1px solid blue;
+}

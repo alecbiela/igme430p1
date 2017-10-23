@@ -3,6 +3,7 @@
 <head>
   <title>IGME430 Project I</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
+  <script async src="https://www.youtube.com/iframe_api"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script>
     //OUTSIDE CODE USED - SETUP CODE FROM YOUTUBE IFRAME API
@@ -46,9 +47,9 @@
 	function stopVideo() {
 		player.stopVideo();
 	}
-</script> 
+  </script> 
 
- <script type="text/babel">
+  <script type="text/babel">
     //handles reponses (xhr onload)
     //takes xhr object and whether we should parse the data (true/false)
     const handleResponse = (xhr, shouldParse) => {
@@ -94,7 +95,7 @@
 
         //loop through and get all users, append to HTML
         Object.keys(obj).forEach(function(k){
-        bigString += '<p class="videoResult">Title: ' + k + ' URL: <span id="vUrl">' + obj[k].url + '</span></p>';
+        bigString += '<p class="videoResult">Title: ' + k + ' URL: <span id="vUrl">' + obj[k].url + '</span> Rating: ' + obj[k].rating + '</p>';
         });
         
         pageBody.innerHTML = bigString;
@@ -143,16 +144,36 @@
         return false;
     };
     
-    
+	//votes on video
+	//FIX THIS (add post)
+	const vote = (e, direction) => {
+	    const xhr = new XMLHttpRequest();
+	  
+	    xhr.onload = () => {
+		  //onload stub
+		  };
+		  
+		  
+		xhr.open('POST', '/vote');
+		
+		//get additional data to send
+		const videoToVote = 'http://www.youtube.com/watch?v=' + player.getVideoData()['video_id'];
+		
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.setRequestHeader('Accept', 'application/json');
+		
+		console.dir(videoToVote);
+		
+		//format the data to send and send it
+		const dataStr = `vidUrl=${videoToVote}&direction=${direction}`;
+		xhr.send(dataStr); 
+		
+		e.preventDefault();
+		return false;
+	};
+	
     //init function called at page load
     const init = () => {
-
-          // 2. This code loads the IFrame Player API code asynchronously.
-      var tag = document.createElement('script');
-
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
       
         //set up globals/event handlers
         const videoForm = document.querySelector('#videoForm');
@@ -160,23 +181,27 @@
         const addVideo = (e) => { sendAjax(e, videoForm); };
         const getUsers = (e) => { sendAjax(e, videoList); };
         document.querySelector('#content').addEventListener('click', (e) => {
-            if(event.target.tagName.toLowerCase() === 'span'){
-                changeVideo(e);
-            }
+          if(event.target.tagName.toLowerCase() === 'span'){
+            changeVideo(e);
+          }
+			
         });
-        
+		
+		document.querySelector('#tUp').addEventListener('click', (e) => { vote(e,'up'); });
+        document.querySelector('#tDown').addEventListener('click', (e) => { vote(e,'down'); });
+		
         videoForm.addEventListener('submit', addVideo);
         videoList.addEventListener('submit', getUsers);
     };
     
-    window.onload = init;
-    
+    window.onload = init;   
   </script>
 
 </head>
 <body>
   <section id="top">
-    <h3>Add to the queue!:</h3>
+    <h3>Add a video to the list:</h3>
+	<p><i>YouTube Only - Assume all videos are NSFW</i></p>
     <form id="videoForm" action="/addVideo" method="POST">
       <label for="title">Title: </label>
       <input id="titleField" type="text" name="title" />
@@ -220,6 +245,9 @@
     <br/>
       <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div id="player"></div>
+	
+	<img id="tUp" src="thumbs_up.svg" alt="Thumbs Up!" />
+	<img id="tDown" src="thumbs_down.svg" alt="Thumbs Down!" />
 
     
 

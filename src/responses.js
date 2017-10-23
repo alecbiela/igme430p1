@@ -1,5 +1,6 @@
 const videoDB = require('./videos.js');
 const url = require('url');
+const query = require('querystring');
 
 // sends response back to client
 const sendResponse = (req, res, data, status) => {
@@ -83,6 +84,32 @@ const updateVideo = (req, res, body) => {
   return sendResponseMeta(req, res, 204);
 };
 
+//updates a vote in the userDB
+const updateVote = (req, res, body) => {
+  //decide if user already voted
+  const pUrl = url.parse(body.vidUrl);
+  const id = query.parse(pUrl.query);  
+  const cookies = req.headers.cookie;
+  let cookiesJSON = query.parse(cookies, ';');
+  console.dir(cookiesJSON);
+  
+  //user has already voted on video, send back message and do not vote
+  if(cookiesJSON.id) {
+    const resObj = {
+	  id: 'rateLimit',
+	  message: 'You have already voted on this video!'	
+	};	 
+    return sendResponse(req, res, resObj, 200);	
+  }
+  
+  //vote and set cookie
+  videoDB.updateVote(body.vidUrl, body.direction); 
+  res.setHeader("Set-Cookie", [`${id.v}=voted`]);
+  
+  //respond 204 (updated)
+  return sendResponseMeta(req, res, 204);
+};
+
 // 404 (Not Found) with error message
 const notFound = (req, res) => {
   const tmp = {
@@ -97,11 +124,22 @@ const notFoundMeta = (req, res) => {
   sendResponseMeta(req, res, 404);
 };
 
+//if the user has already voted, send back 200 but message that they already voted
+const alreadyVoted = (req, res) => {
+  const resObj = {
+	  id: 'rateLimit',
+	  message: 'You have already voted on this video!'
+  };
+  return sendResponse(req, res, resObj, 200);
+};
+
 // export only calls to pages, not the inner workings
 module.exports = {
   getVideoQueue,
   getVideoQueueMeta,
   updateVideo,
+  updateVote,
   notFound,
   notFoundMeta,
+  alreadyVoted
 };

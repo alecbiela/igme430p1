@@ -26,12 +26,12 @@ const handleGet = (req, res, pUrl) => {
     case '/style.css':
       htmlHandler.loadCSS(req, res);
       break;
-	case '/thumbs_up.svg':
-	  htmlHandler.loadThumbsUp(req, res);
-	  break;
+    case '/thumbs_up.svg':
+      htmlHandler.loadThumbsUp(req, res);
+      break;
     case '/thumbs_down.svg':
-	  htmlHandler.loadThumbsDown(req, res);
-	  break;
+      htmlHandler.loadThumbsDown(req, res);
+      break;
     case '/getVideos':
       responses.getVideoQueue(req, res);
       break;
@@ -69,8 +69,8 @@ const handlePost = (req, res, pUrl) => {
       const bodyParams = queryString.parse(bodyStr);
 
       // now process the user
-      if(pUrl.pathname === '/addVideo') responses.updateVideo(req, res, bodyParams);
-	  else responses.updateVote(req, res, bodyParams);
+      if (pUrl.pathname === '/addVideo') responses.updateVideo(req, res, bodyParams);
+      else responses.updateVote(req, res, bodyParams);
     });
   } else {
     // respond with 404 META (post request, no body returned)
@@ -83,7 +83,7 @@ const handlePost = (req, res, pUrl) => {
 const onRequest = (req, res) => {
   // parse URL and get params
   const parsedUrl = url.parse(req.url);
-  
+
   // decide how to handle request based on method
   if (req.method === 'POST') handlePost(req, res, parsedUrl);
   else if (req.method === 'GET') handleGet(req, res, parsedUrl);

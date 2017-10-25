@@ -1,51 +1,150 @@
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-#top {
-  float: left;
-  width: 49%;
-  margin: auto;
-}
-
-#features {
-  float: right;
-  width: 49%;
-  margin: auto;
+#playerWrapper {
+    display: inline-block;
+    float: right;
+    width: 620px;
+    margin-right: 20px;
+    margin-top: 50px;
+    padding: 10px;
+    background-color: #eee;
+    border: 2px solid #555;
+    border-radius: 5px;
+    height: 650px;
+    position: relative;
+    
+    /* W3 Schools Gradient Example */
+    background: #eee; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#eee, #bbb); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#eee, #bbb); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#eee, #bbb); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#eee, #bbb); /* Standard syntax */
 }
 
 #player {
-  width: 600px;
-  margin: auto;
-}
-
-#content{
-  width: 49%;
-  height: 500px;
-}
-
-#top, #features, #player, #content {
-    border: 1px solid grey;
-    display: block;
-    padding: 2px;
-}
-
-#vUrl {
-  color: red;
-  text-decoration: underline;
+    width: 620px;
 }
 
 #tUp, #tDown {
   width: 100px;
   height: 100px;
-  cursor: pointer;
-  border: 1px solid black;
+  display: inline-block;
+  margin-top: 30px;
 }
 
+#tUp { float: right; margin-right: 50px; }
+#tDown { float: left; margin-left: 50px; }
+
 #tUp:hover, #tDown:hover {
-	background-color: #00F;
-	border: 1px solid blue;
+  cursor: pointer;
+  width: 120px;
+  height: 120px;
+}
+
+#top {
+    display: inline-block;
+    width: 400px;
+    float: left;
+    margin-left: 20px;
+    margin-top: 50px;
+    padding: 5px;
+    border: 2px solid #555;
+    border-radius: 6px;
+
+    /* W3 Schools Gradient Example */
+    background: #eee; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#eee, #FFBD33); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#eee, #FFBD33); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#eee, #FFBD33); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#eee, #FFBD33); /* Standard syntax */
+}
+
+#top * {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#pageWrapper {
+    width: 1200px;
+    margin: auto;
+}
+
+#contentWrapper {
+  height: 365px;
+}
+
+#content {
+  overflow-y: scroll;
+  height: 250px;
+  background-color: #eee;
+  border: 1px solid #555;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  white-space: nowrap;
+}
+
+#urlField, #titleField {
+  width: 360px;
+  height: 40px;
+  font-size: 2em;
+}
+
+
+#vidButton {
+  height: 35px;
+  width: 130px;
+  float: right;
+  font-size: 1.5em;
+}
+
+#getVidButton {
+  float: right;
+  margin-right: 0;
+  height: 25px;
+  width: 150px;
+  font-size: 1em;
+}
+
+#top h1 {
+  font-size: 2em;
+  margin-bottom: 3px;
+  margin-left: 20px;
+}
+
+#top p {
+  font-size: 1em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+#resMessage {
+  margin-right: 20px;
+  text-decoration: bold;
+  margin-top: 0;
+  margin-bottom: 0;
+  float: right;
+}
+
+#voteResText {
+  font-size: 2em;
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  margin: 0;
+  float: left;
+  display: inline;
+  
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Open Sans', sans-serif;
+  color: #006;
+}
+
+#vUrl {
+  text-decoration: underline;
+  cursor: pointer;
+  color: blue;
 }

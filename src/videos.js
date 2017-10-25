@@ -16,20 +16,25 @@ const updateVideo = (title, url) => {
   return newVideo;
 };
 
-//updates the vote
+// updates the vote
 const updateVote = (vurl, direction) => {
-  for(let i=0; i<videoQueue.length; i++) {
-    if(videoQueue[i].url === vurl) {
-	  if(direction === 'up') videoQueue[i].rating += 1;
-	  else videoQueue[i].rating -= 1;
-	  break;
-	}
+  // get keys, loop through to find url
+  const keys = Object.keys(videoQueue);
+  let found = false;
+
+  for (let i = 0; i < keys.length; i++) {
+    if (videoQueue[keys[i]].url === vurl) {
+      if (direction === 'up') videoQueue[keys[i]].rating += 1;
+      else videoQueue[keys[i]].rating -= 1;
+      found = true;
+      break;
+    }
   }
-  
-  //get new etag, since we changed
+
+  // get new etag, since we changed
   etag = crypto.createHash('sha1').update(JSON.stringify(videoQueue));
-  
-  return false;
+
+  return found;
 };
 
 // gets the object full of current videoQueue

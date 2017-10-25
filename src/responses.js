@@ -84,30 +84,39 @@ const updateVideo = (req, res, body) => {
   return sendResponseMeta(req, res, 204);
 };
 
-//updates a vote in the userDB
+// updates a vote in the userDB
 const updateVote = (req, res, body) => {
-  //decide if user already voted
+  // decide if user already voted
   const pUrl = url.parse(body.vidUrl);
-  const id = query.parse(pUrl.query);  
+  const id = query.parse(pUrl.query);
   const cookies = req.headers.cookie;
-  let cookiesJSON = query.parse(cookies, ';');
-  console.dir(cookiesJSON);
-  
-  //user has already voted on video, send back message and do not vote
-  if(cookiesJSON.id) {
+  const cookiesJSON = query.parse(cookies, '; ');
+
+
+  // user has already voted on video, send back message and do not vote
+  if (cookiesJSON[`${id.v}`]) {
     const resObj = {
-	  id: 'rateLimit',
-	  message: 'You have already voted on this video!'	
-	};	 
-    return sendResponse(req, res, resObj, 200);	
+      id: 'rateLimit',
+      message: 'You have already voted on this video!',
+    };
+    return sendResponse(req, res, resObj, 200);
   }
-  
-  //vote and set cookie
-  videoDB.updateVote(body.vidUrl, body.direction); 
-  res.setHeader("Set-Cookie", [`${id.v}=voted`]);
-  
-  //respond 204 (updated)
-  return sendResponseMeta(req, res, 204);
+
+  // vote and set cookie
+  if (videoDB.updateVote(body.vidUrl, body.direction)) res.setHeader('Set-Cookie', [`${id.v}=voted`]);
+  else {
+    const resObj = {
+      id: 'videoNotFound',
+      message: 'This video isn\'t in the list!',
+    };
+    return sendResponse(req, res, resObj, 404);
+  }
+  // respond 201 (updated)
+  const resObj = {
+    id: 'voteSuccess',
+    message: 'Thank you for voting!',
+  };
+  return sendResponse(req, res, resObj, 201);
 };
 
 // 404 (Not Found) with error message
@@ -124,14 +133,6 @@ const notFoundMeta = (req, res) => {
   sendResponseMeta(req, res, 404);
 };
 
-//if the user has already voted, send back 200 but message that they already voted
-const alreadyVoted = (req, res) => {
-  const resObj = {
-	  id: 'rateLimit',
-	  message: 'You have already voted on this video!'
-  };
-  return sendResponse(req, res, resObj, 200);
-};
 
 // export only calls to pages, not the inner workings
 module.exports = {
@@ -141,5 +142,4 @@ module.exports = {
   updateVote,
   notFound,
   notFoundMeta,
-  alreadyVoted
 };

@@ -23,14 +23,14 @@ const loadCSS = (req, res) => {
 const loadThumbsUp = (req, res) => {
   res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
   res.write(tUp);
-  res.end();  
+  res.end();
 };
 
 // returns an image
 const loadThumbsDown = (req, res) => {
   res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
   res.write(tDown);
-  res.end();  
+  res.end();
 };
 
 module.exports = {

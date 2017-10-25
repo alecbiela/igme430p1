@@ -3,6 +3,7 @@
 <head>
   <title>IGME430 Project I</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
   <script async src="https://www.youtube.com/iframe_api"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script>
@@ -10,84 +11,56 @@
     //https://developers.google.com/youtube/iframe_api_reference
 
     //globals
-	var player;
-	var done = false;
+    var player;
+    var done = false;
 
-	// 3. This function creates an <iframe> (and YouTube player)
-	//    after the API code downloads.
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
 
-	function onYouTubeIframeAPIReady() {
-		player = new YT.Player('player', {
-		height: '390',
-		width: '640',
-		videoId: '',
-		events: {
-			'onReady': onPlayerReady,
-			//'onStateChange': onPlayerStateChange
-			'onError': function(e) { console.dir(e.data);}
-			}
-		});
-	}
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+        height: '390',
+        width: '640',
+        videoId: '',
+        events: {
+            'onReady': onPlayerReady,
+            //'onStateChange': onPlayerStateChange
+            'onError': function(e) { console.dir(e.data);}
+            }
+        });
+    }
 
-	// 4. The API will call this function when the video player is ready.
-	function onPlayerReady(event) {
-		event.target.playVideo();
-	}
+    // 4. The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+        event.target.playVideo();
+    }
 
-	// 5. The API calls this function when the player's state changes.
-	//    The function indicates that when playing a video (state=1),
-	//    the player should play for one second and then stop.
-	function onPlayerStateChange(event) {
-		if (event.data == YT.PlayerState.PLAYING && !done) {
-			setTimeout(stopVideo, 1000);
-			done = true;
-		}
-	}
-	
-	function stopVideo() {
-		player.stopVideo();
-	}
+    // 5. The API calls this function when the player's state changes.
+    //    The function indicates that when playing a video (state=1),
+    //    the player should play for one second and then stop.
+    function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+            setTimeout(stopVideo, 1000);
+            done = true;
+        }
+    }
+    
+    function stopVideo() {
+        player.stopVideo();
+    }
   </script> 
 
   <script type="text/babel">
     //handles reponses (xhr onload)
     //takes xhr object and whether we should parse the data (true/false)
     const handleResponse = (xhr, shouldParse) => {
-        const pageBody = document.querySelector('#content');
-        
-        console.dir(xhr.status);
-        
-        //decide what to do based on status code
-        switch(xhr.status) {
-          case 200: //success
-            pageBody.innerHTML = '<b>Success</b>';
-            break;
-          case 201: //created
-            pageBody.innerHTML = '<b>Created</b>';
-            break;
-          case 204: //updated
-            pageBody.innerHTML = '<b>Updated</b>';
-            break;
-          case 304: //file not modified
-            pageBody.innerHTML = '<b>Not Modified</b>';
-            return;
-          case 400: //bad request
-            pageBody.innerHTML = '<b>Bad Request</b>';
-            break;
-          case 404: //not found
-            pageBody.innerHTML = '<b>Resource Not Found</b>';
-            break;
-          default: //anything else
-            pageBody.innerHTML = '<b>Error - Client cannot parse response</b>';
-            break;
-        }
-        
+        const pageBody = document.querySelector('#content');      
 
         const obj = JSON.parse(xhr.response);
 
         //if we have a message, just print it and leave
         if(obj.message) {
-        pageBody.innerHTML += '<p>' + obj.message + '</p>';
+        document.querySelector('#resMessage').innerHTML = obj.message;
         return;
         }
 
@@ -95,7 +68,7 @@
 
         //loop through and get all users, append to HTML
         Object.keys(obj).forEach(function(k){
-        bigString += '<p class="videoResult">Title: ' + k + ' URL: <span id="vUrl">' + obj[k].url + '</span> Rating: ' + obj[k].rating + '</p>';
+        bigString += '<p class="videoResult"><b>' + k + '</b><br />Rating: ' + obj[k].rating + '<br/><span id="vUrl">' + obj[k].url + '</span></p><hr/>';
         });
         
         pageBody.innerHTML = bigString;
@@ -106,6 +79,11 @@
         const vidUrl = e.target.textContent;
         const vidID = vidUrl.split('v=')[1].split('&')[0];
         player.loadVideoById(vidID);
+        
+        //show vote buttons, hide response text
+        document.querySelector('#voteResText').style.display = 'none';
+        document.querySelector('#tUp').style.display = 'inline-block';
+        document.querySelector('#tDown').style.display = 'inline-block';        
     }
     
     //sends an AJAX request to the server
@@ -144,34 +122,40 @@
         return false;
     };
     
-	//votes on video
-	//FIX THIS (add post)
-	const vote = (e, direction) => {
-	    const xhr = new XMLHttpRequest();
-	  
-	    xhr.onload = () => {
-		  //onload stub
-		  };
-		  
-		  
-		xhr.open('POST', '/vote');
-		
-		//get additional data to send
-		const videoToVote = 'http://www.youtube.com/watch?v=' + player.getVideoData()['video_id'];
-		
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.setRequestHeader('Accept', 'application/json');
-		
-		console.dir(videoToVote);
-		
-		//format the data to send and send it
-		const dataStr = `vidUrl=${videoToVote}&direction=${direction}`;
-		xhr.send(dataStr); 
-		
-		e.preventDefault();
-		return false;
-	};
-	
+    //votes on video
+    const vote = (e, direction) => {
+        const xhr = new XMLHttpRequest();
+      
+        xhr.onload = () => {
+          //onload stub
+          const obj = JSON.parse(xhr.response);
+          
+          //set message to span in html
+          if(obj.message) document.querySelector('#voteResText').innerHTML = '<p>' + obj.message + '</p>';
+          document.querySelector('#voteResText').style.display = 'block';
+          
+          //hide vote buttons
+          document.querySelector('#tUp').style.display = 'none';
+          document.querySelector('#tDown').style.display = 'none';
+        };
+          
+          
+        xhr.open('POST', '/vote');
+        
+        //get additional data to send
+        const videoToVote = 'https://www.youtube.com/watch?v=' + player.getVideoData()['video_id'];
+        
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('Accept', 'application/json');
+        
+        //format the data to send and send it
+        const dataStr = `vidUrl=${videoToVote}&direction=${direction}`;
+        xhr.send(dataStr); 
+        
+        e.preventDefault();
+        return false;
+    };
+    
     //init function called at page load
     const init = () => {
       
@@ -183,13 +167,12 @@
         document.querySelector('#content').addEventListener('click', (e) => {
           if(event.target.tagName.toLowerCase() === 'span'){
             changeVideo(e);
-          }
-			
+          }        
         });
-		
-		document.querySelector('#tUp').addEventListener('click', (e) => { vote(e,'up'); });
-        document.querySelector('#tDown').addEventListener('click', (e) => { vote(e,'down'); });
-		
+        
+        //hook up event listeners
+        document.querySelector('#tUp').addEventListener('click', (e) => { vote(e,'up'); });
+        document.querySelector('#tDown').addEventListener('click', (e) => { vote(e,'down'); });        
         videoForm.addEventListener('submit', addVideo);
         videoList.addEventListener('submit', getUsers);
     };
@@ -199,57 +182,45 @@
 
 </head>
 <body>
+  <section id="pageWrapper">
   <section id="top">
-    <h3>Add a video to the list:</h3>
-	<p><i>YouTube Only - Assume all videos are NSFW</i></p>
+    <h1>Add a video to the list:</h1>
+    <p><i>YouTube Only - Assume all videos are NSFW</i></p>
     <form id="videoForm" action="/addVideo" method="POST">
-      <label for="title">Title: </label>
-      <input id="titleField" type="text" name="title" />
-      <label for="urlS">YouTube URL: </label>
-      <input id="urlField" type="text" name="urlS" />
-      <input type="submit" value="Add Video!" />
+      <input id="urlField" type="text" name="urlS" placeholder="YouTube Link..."/> <br />
+      <input id="titleField" type="text" name="title" placeholder="Description..."/> <br /><br/>
+      <input type="submit" value="Add Video!" id="vidButton" />
     </form>
-    
-    
-    <form id="videoList" action="/getVideos" method="GET">
-      <br />
-      <br />
-      <input type="submit" value="Get All Videos" />
-    </form>
-  </section>
-  
-  <section id="features">
-    <p>Current Features</p>
-    <ul>
-      <li>Youtube IFrame API used to play videos</li>
-      <li>Enter a title/caption and Video URL to add a video to the Queue</li>
-      <li>Click the 'Get Videos' Button to get all submitted Videos</li>
-      <li>Click on a video URL from the list that appears to play that video</li>
-      <li>Bad request given if youtube URL field is not a URL to youtube.com</li>
-      <li>Bad request given if either field is empty</li>
-    </ul>
-    <p>Planned Additions</p>
-    <ul>    
-      <li>More CSS</li>
-      <li>Upvoting and downvoting of videos (rating)</li>
-      <li>Handling of Youtube API Errors?</li>
-      <li>Better formatting of results(again, more CSS)</li>
-    </ul>
-  </section>
-  
+    <br/>
+    <br/>
+    <span id="resMessage"></span>
+    <br />
   <!-- Content will display here once we've loaded some -->
-  <section id="content">
+  <section id="contentWrapper">
+    <h2>Video List</h2>
+    
+    <section id="content">
+      
+    </section>
+  
+    <form id="videoList" action="/getVideos" method="GET">
+      <input type="submit" value="Refresh Video List" id="getVidButton" />
+    </form>
+  </section>    
+
   </section>
   
-    <br/>
-    <br/>
-      <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-    <div id="player"></div>
-	
-	<img id="tUp" src="thumbs_up.svg" alt="Thumbs Up!" />
-	<img id="tDown" src="thumbs_down.svg" alt="Thumbs Down!" />
 
+  
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <section id="playerWrapper">
+    <div id="player"></div><br/>
     
-
+    <img id="tUp" src="thumbs_up.svg" alt="Thumbs Up!" />
+    <img id="tDown" src="thumbs_down.svg" alt="Thumbs Down!" />
+    <span id="voteResText"></span>
+    </section>
+    
+    </section>
 </body>
 </html>
